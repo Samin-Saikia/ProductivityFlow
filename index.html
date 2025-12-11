@@ -1,0 +1,2546 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productivity Flow | Premium Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;family=Montserrat:wght@700;800&amp;display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --dark: #1d3557;
+            --darker: #14213d;
+            --light: #f8f9fa;
+            --gray: #8d99ae;
+            --border: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            --transition: all 0.3s ease;
+        }
+
+        .dark-mode {
+            --primary: #4895ef;
+            --primary-light: #4361ee;
+            --secondary: #7209b7;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --dark: #03071e;
+            --darker: #000814;
+            --light: #e9ecef;
+            --gray: #adb5bd;
+            --border: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(20, 33, 61, 0.6);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--light);
+            min-height: 100vh;
+            transition: var(--transition);
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: rgba(20, 33, 61, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 25px 15px;
+            transition: var(--transition);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 10px 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo i {
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        .logo h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 24px;
+            background: linear-gradient(to right, var(--primary), var(--success));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            width: 24px;
+            text-align: center;
+            color: var(--gray);
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: var(--primary);
+        }
+
+        .nav-item:hover i, .nav-item.active i {
+            color: white;
+        }
+
+        .utils {
+            padding: 15px 0;
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .admin-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .date-display {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .mini-timer {
+            background: var(--primary);
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mini-timer.running {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(67, 97, 238, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(67, 97, 238, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(67, 97, 238, 0); }
+        }
+
+        /* Feature Content */
+        .feature-content {
+            display: none;
+        }
+
+        .feature-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        /* Todo List */
+        .todo-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 1100px) {
+            .todo-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .todo-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+        }
+
+        .todo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .todo-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .todo-input {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 50px;
+            border: none;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--light);
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+        }
+
+        .todo-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 50px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .btn i {
+            font-size: 16px;
+        }
+
+        .todo-list {
+            list-style: none;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .todo-item:last-child {
+            border-bottom: none;
+        }
+
+        .todo-check {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid var(--gray);
+            margin-right: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .todo-check.completed {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .todo-check.completed i {
+            display: block;
+            color: white;
+            font-size: 12px;
+        }
+
+        .todo-check i {
+            display: none;
+        }
+
+        .todo-text {
+            flex: 1;
+            font-size: 16px;
+        }
+
+        .todo-text.completed {
+            text-decoration: line-through;
+            color: var(--gray);
+        }
+
+        .todo-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .todo-actions i {
+            color: var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .todo-actions i:hover {
+            color: var(--warning);
+        }
+
+        /* Pomodoro Timer */
+        .pomodoro-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px 0;
+        }
+
+        .timer-display {
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 30px 0;
+            position: relative;
+            box-shadow: var(--shadow);
+        }
+
+        .timer-display::before {
+            content: '';
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            border: 3px solid var(--primary);
+            border-top-color: transparent;
+            animation: rotate 60s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .timer-time {
+            font-size: 60px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .timer-status {
+            font-size: 18px;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .timer-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .timer-btn:hover {
+            transform: scale(1.1);
+            background: var(--primary-light);
+        }
+
+        .timer-btn.warning {
+            background: var(--warning);
+        }
+
+        .session-info {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .session-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            min-width: 140px;
+        }
+
+        .session-card h3 {
+            font-size: 16px;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+
+        .session-card .value {
+            font-size: 32px;
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(to right, var(--primary), var(--success));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Daily Status */
+        .daily-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .stat-icon.task {
+            background: rgba(67, 97, 238, 0.2);
+            color: var(--primary);
+        }
+
+        .stat-icon.focus {
+            background: rgba(76, 201, 240, 0.2);
+            color: var(--success);
+        }
+
+        .stat-icon.break {
+            background: rgba(247, 37, 133, 0.2);
+            color: var(--warning);
+        }
+
+        .stat-title h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .stat-title p {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .mood-tracker {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .mood-title {
+            font-size: 18px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .moods {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .mood-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: var(--transition);
+        }
+
+        .mood-option:hover, .mood-option.selected {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .mood-emoji {
+            font-size: 40px;
+        }
+
+        .mood-name {
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        .notes-section {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .notes-title {
+            font-size: 18px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notes-input {
+            width: 100%;
+            height: 120px;
+            padding: 15px;
+            border-radius: 15px;
+            border: none;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--light);
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            resize: none;
+        }
+
+        .notes-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        /* Monthly Report */
+        .report-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 1100px) {
+            .report-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .report-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .report-grade {
+            font-size: 80px;
+            font-weight: 800;
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+            margin: 20px 0;
+            background: linear-gradient(to right, var(--primary), var(--success));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .report-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+        }
+
+        .report-stat {
+            text-align: center;
+        }
+
+        .report-stat .value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .report-stat .label {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .report-chart {
+            height: 200px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            gap: 10px;
+            padding: 20px 0;
+        }
+
+        .chart-bar {
+            width: 30px;
+            background: var(--primary);
+            border-radius: 5px 5px 0 0;
+            position: relative;
+        }
+
+        .chart-bar::after {
+            content: attr(data-day);
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .badge {
+            background: rgba(67, 97, 238, 0.2);
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge i {
+            color: var(--primary);
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            max-width: 500px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .admin-title {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 25px;
+        }
+
+        .pin-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .pin-input {
+            width: 60px;
+            height: 70px;
+            border-radius: 15px;
+            border: 2px solid var(--border);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+            font-size: 32px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .pin-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .admin-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .action-btn {
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            color: var(--light);
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .action-btn i {
+            font-size: 20px;
+            width: 24px;
+        }
+
+        .action-btn.delete i {
+            color: var(--warning);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-top: 1px solid var(--border);
+            z-index: 200;
+        }
+
+        .mobile-nav {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .mobile-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: var(--gray);
+            cursor: pointer;
+        }
+
+        .mobile-nav-item i {
+            font-size: 20px;
+        }
+
+        .mobile-nav-item.active {
+            color: var(--primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 80px;
+                padding: 20px 10px;
+            }
+            
+            .logo h1, .nav-item span, .theme-toggle span, .admin-btn span {
+                display: none;
+            }
+            
+            .logo {
+                justify-content: center;
+                padding: 0 0 20px;
+            }
+            
+            .nav-item {
+                justify-content: center;
+                padding: 15px;
+            }
+            
+            .utils {
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: 70px;
+                padding: 0 20px;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+            
+            .logo {
+                padding: 0;
+                margin: 0;
+                border: none;
+                width: auto;
+            }
+            
+            .logo h1 {
+                display: block;
+                font-size: 20px;
+            }
+            
+            .nav-links, .utils {
+                display: none;
+            }
+            
+            .mobile-menu {
+                display: block;
+            }
+            
+            .main-content {
+                padding: 20px;
+                padding-bottom: 80px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .session-info {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .timer-display {
+                width: 240px;
+                height: 240px;
+            }
+            
+            .timer-display::before {
+                width: 220px;
+                height: 220px;
+            }
+            
+            .timer-time {
+                font-size: 50px;
+            }
+            
+            .report-stats {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+        
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: var(--primary);
+            color: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        .toast.success {
+            background: #4BB543;
+        }
+        
+        .toast.error {
+            background: var(--warning);
+        }
+        
+        .streak-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(76, 201, 240, 0.2);
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-left: 10px;
+        }
+        
+        .streak-indicator i {
+            color: var(--success);
+        }
+        
+        /* New elements */
+        .creator-credit {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--gray);
+            font-size: 12px;
+        }
+        
+        .month-selector {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .month-btn {
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .admin-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: var(--dark);
+            border-radius: 15px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .settings-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .form-group label {
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        .form-group input {
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .history-day {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .history-day h4 {
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+        
+        /* New streak indicator */
+        .streak-fire {
+            color: #ff9a3d;
+            text-shadow: 0 0 8px rgba(255, 154, 61, 0.7);
+            animation: pulseFire 1.5s infinite;
+        }
+        
+        @keyframes pulseFire {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+        
+        /* Productivity chart */
+        .productivity-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .productivity-label {
+            width: 120px;
+            font-size: 14px;
+        }
+        
+        .productivity-progress {
+            flex: 1;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .productivity-progress-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="toast" id="toast">Task added successfully!</div>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-rocket"></i>
+                <h1>Productivity Flow</h1>
+            </div>
+            
+            <div class="nav-links">
+                <div class="nav-item active" data-target="todo">
+                    <i class="fas fa-tasks"></i>
+                    <span>Todo List</span>
+                </div>
+                <div class="nav-item" data-target="pomodoro">
+                    <i class="fas fa-clock"></i>
+                    <span>Pomodoro Timer</span>
+                </div>
+                <div class="nav-item" data-target="daily">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Daily Status</span>
+                </div>
+                <div class="nav-item" data-target="monthly">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Monthly Report</span>
+                </div>
+            </div>
+            
+            <div class="utils">
+                <div class="theme-toggle" id="themeToggle">
+                    <div>
+                        <i class="fas fa-moon"></i>
+                        <span>Dark Mode</span>
+                    </div>
+                    <div class="toggle-switch">
+                        <i class="fas fa-toggle-off"></i>
+                    </div>
+                </div>
+                
+                <div class="admin-btn" id="adminBtn">
+                    <i class="fas fa-lock"></i>
+                    <span>Admin Panel</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-bar">
+                <div class="date-display">
+                    <i class="fas fa-calendar-day"></i>
+                    <span id="currentDate">Thursday, December 11, 2025</span>
+                    <span class="streak-indicator" id="streakIndicator">
+                        <i class="fas fa-fire streak-fire" style="display: none;"></i> <span id="streakCount">1</span> day streak
+                    </span>
+                </div>
+                <div class="mini-timer" id="miniTimer">
+                    <i class="fas fa-clock"></i>
+                    <span>25:00</span>
+                </div>
+            </div>
+            
+            <!-- Todo List -->
+            <div class="feature-content active" id="todo">
+                <h2 class="section-title">
+                    <i class="fas fa-tasks"></i>
+                    Task Management
+                </h2>
+                
+                <div class="todo-container">
+                    <div class="todo-card">
+                        <div class="todo-header">
+                            <h3>Today's Tasks</h3>
+                            <span id="taskCount">0 tasks</span>
+                        </div>
+                        
+                        <form class="todo-form" id="todoForm">
+                            <input type="text" class="todo-input" id="todoInput" placeholder="Add a new task..." autocomplete="off">
+                            <button type="submit" class="btn">
+                                <i class="fas fa-plus"></i> Add
+                            </button>
+                        </form>
+                        
+                        <ul class="todo-list" id="todoList"></ul>
+                    </div>
+                    
+                    <div class="todo-card">
+                        <div class="todo-header">
+                            <h3>Completed Tasks</h3>
+                            <span id="completedCount">0 tasks</span>
+                        </div>
+                        
+                        <ul class="todo-list" id="completedList"></ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pomodoro Timer -->
+            <div class="feature-content" id="pomodoro">
+                <h2 class="section-title">
+                    <i class="fas fa-clock"></i>
+                    Focus Timer
+                </h2>
+                
+                <div class="pomodoro-container">
+                    <div class="timer-display">
+                        <div class="timer-time" id="timerTime">25:00</div>
+                        <div class="timer-status" id="timerStatus">Focus Time</div>
+                    </div>
+                    
+                    <div class="timer-controls">
+                        <button class="timer-btn" id="startBtn">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="timer-btn" id="pauseBtn">
+                            <i class="fas fa-pause"></i>
+                        </button>
+                        <button class="timer-btn" id="resetBtn">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                        <button class="timer-btn warning" id="skipBtn">
+                            <i class="fas fa-step-forward"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="session-info">
+                        <div class="session-card">
+                            <h3>Focus Sessions</h3>
+                            <div class="value" id="sessionCount">0</div>
+                        </div>
+                        <div class="session-card">
+                            <h3>Today's Focus</h3>
+                            <div class="value" id="todayFocus">0m</div>
+                        </div>
+                        <div class="session-card">
+                            <h3>Weekly Goal</h3>
+                            <div class="value" id="weeklyGoal">0%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Daily Status -->
+            <div class="feature-content" id="daily">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-line"></i>
+                    Daily Progress
+                </h2>
+                
+                <div class="daily-stats">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon task">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <div class="stat-title">
+                                <h3>Tasks Completed</h3>
+                                <p>Today's progress</p>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="tasksCompleted">0/0</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon focus">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div class="stat-title">
+                                <h3>Focus Time</h3>
+                                <p>Deep work sessions</p>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="dailyFocus">0m</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon break">
+                                <i class="fas fa-coffee"></i>
+                            </div>
+                            <div class="stat-title">
+                                <h3>Breaks Taken</h3>
+                                <p>Essential recovery</p>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="breaksTaken">0</div>
+                    </div>
+                </div>
+                
+                <div class="mood-tracker">
+                    <div class="mood-title">
+                        <i class="fas fa-smile"></i>
+                        <h3>How are you feeling today?</h3>
+                    </div>
+                    <div class="moods">
+                        <div class="mood-option" data-mood="awful">
+                            <div class="mood-emoji">😭</div>
+                            <div class="mood-name">Awful</div>
+                        </div>
+                        <div class="mood-option" data-mood="bad">
+                            <div class="mood-emoji">😔</div>
+                            <div class="mood-name">Bad</div>
+                        </div>
+                        <div class="mood-option" data-mood="okay">
+                            <div class="mood-emoji">😐</div>
+                            <div class="mood-name">Okay</div>
+                        </div>
+                        <div class="mood-option selected" data-mood="good">
+                            <div class="mood-emoji">😊</div>
+                            <div class="mood-name">Good</div>
+                        </div>
+                        <div class="mood-option" data-mood="great">
+                            <div class="mood-emoji">😄</div>
+                            <div class="mood-name">Great</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="notes-section">
+                    <div class="notes-title">
+                        <i class="fas fa-sticky-note"></i>
+                        <h3>Daily Notes &amp; Reflections</h3>
+                    </div>
+                    <textarea class="notes-input" id="dailyNotes" placeholder="What went well today? What could be improved?"></textarea>
+                    <button class="btn" id="saveNotes" style="margin-top: 15px;">
+                        <i class="fas fa-save"></i> Save Notes
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Monthly Report -->
+            <div class="feature-content" id="monthly">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-pie"></i>
+                    Performance Report
+                </h2>
+                
+                <div class="month-selector">
+                    <button class="month-btn" id="prevMonthBtn"><i class="fas fa-chevron-left"></i></button>
+                    <h3 id="reportMonth">December 2025 Report Card</h3>
+                    <button class="month-btn" id="nextMonthBtn"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                
+                <div class="report-container">
+                    <div class="report-card">
+                        <div class="report-header">
+                            <div>
+                                <h3>Monthly Overview</h3>
+                                <small id="reportDateRange">Dec 1 - 
+                 Dec 31, 2025</small>
+                            </div>
+                            <button class="btn" id="exportReport">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                        
+                        <div class="report-grade" id="reportGrade">D</div>
+                        
+                        <div class="report-stats">
+                            <div class="report-stat">
+                                <div class="value" id="completionRate">0%</div>
+                                <div class="label">Completion</div>
+                            </div>
+                            <div class="report-stat">
+                                <div class="value" id="monthlyFocus">0h</div>
+                                <div class="label">Focus Time</div>
+                            </div>
+                            <div class="report-stat">
+                                <div class="value" id="monthlySessions">0</div>
+                                <div class="label">Sessions</div>
+                            </div>
+                            <div class="report-stat">
+                                <div class="value" id="streakRecord">0</div>
+                                <div class="label">Streak Record</div>
+                            </div>
+                        </div>
+                        
+                        <div class="section-title">
+                            <i class="fas fa-trophy"></i>
+                            <h3>Your Achievements</h3>
+                        </div>
+                        
+                        <div class="badges" id="achievements"></div>
+                    </div>
+                    
+                    <div class="report-card">
+                        <div class="report-header">
+                            <h3>Productivity Metrics</h3>
+                            <span id="trendPeriod">This Month</span>
+                        </div>
+                        
+                        <div class="productivity-metrics" id="productivityMetrics">
+                <div class="productivity-bar">
+                    <div class="productivity-label">Task Completion</div>
+                    <div class="productivity-progress">
+                        <div class="productivity-progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="productivity-value">0%</div>
+                </div>
+                <div class="productivity-bar">
+                    <div class="productivity-label">Focus Sessions</div>
+                    <div class="productivity-progress">
+                        <div class="productivity-progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="productivity-value">0/20</div>
+                </div>
+                <div class="productivity-bar">
+                    <div class="productivity-label">Streak Record</div>
+                    <div class="productivity-progress">
+                        <div class="productivity-progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="productivity-value">0 days</div>
+                </div>
+            </div>
+                        
+                        <div class="section-title">
+                            <i class="fas fa-bullseye"></i>
+                            <h3>Next Month Goals</h3>
+                        </div>
+                        
+                        <ul class="todo-list" id="monthlyGoals"><li class="todo-item">
+                    <div class="todo-check ">
+                        
+                    </div>
+                    <div class="todo-text ">Achieve 80% task completion rate</div>
+                </li><li class="todo-item">
+                    <div class="todo-check ">
+                        
+                    </div>
+                    <div class="todo-text ">Complete 20 focus sessions</div>
+                </li><li class="todo-item">
+                    <div class="todo-check ">
+                        
+                    </div>
+                    <div class="todo-text ">Maintain 3-day productivity streak</div>
+                </li></ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Admin Panel -->
+            <div class="feature-content" id="admin">
+                <div class="admin-panel">
+                    <h2 class="admin-title">
+                        <i class="fas fa-lock"></i>
+                        Admin Panel
+                    </h2>
+                    
+                    <p style="text-align: center; margin-bottom: 20px; color: var(--gray);">
+                        Enter your 4-digit PIN to access admin features
+                    </p>
+                    
+                    <div class="pin-inputs">
+                        <input type="password" class="pin-input" maxlength="1" id="pin1">
+                        <input type="password" class="pin-input" maxlength="1" id="pin2">
+                        <input type="password" class="pin-input" maxlength="1" id="pin3">
+                        <input type="password" class="pin-input" maxlength="1" id="pin4">
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button class="btn" id="pinSubmit">
+                            <i class="fas fa-unlock"></i> Unlock Admin
+                        </button>
+                    </div>
+                    
+                    <div class="admin-actions" id="adminActions" style="display: none;">
+                        <button class="action-btn" id="resetData">
+                            <i class="fas fa-trash"></i>
+                            <span>Reset All Data</span>
+                        </button>
+                        <button class="action-btn" id="exportData">
+                            <i class="fas fa-file-export"></i>
+                            <span>Export Data</span>
+                        </button>
+                        <button class="action-btn" id="importData">
+                            <i class="fas fa-file-import"></i>
+                            <span>Import Data</span>
+                        </button>
+                        <button class="action-btn" id="timerSettings">
+                            <i class="fas fa-cog"></i>
+                            <span>Timer Settings</span>
+                        </button>
+                        <button class="action-btn" id="viewHistory">
+                            <i class="fas fa-history"></i>
+                            <span>View History</span>
+                        </button>
+                    </div>
+                    
+                    <div class="creator-credit">
+                        Created by Samin Saikia
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+        <div class="mobile-nav">
+            <div class="mobile-nav-item active" data-target="todo">
+                <i class="fas fa-tasks"></i>
+                <span>Tasks</span>
+            </div>
+            <div class="mobile-nav-item" data-target="pomodoro">
+                <i class="fas fa-clock"></i>
+                <span>Timer</span>
+            </div>
+            <div class="mobile-nav-item" data-target="daily">
+                <i class="fas fa-chart-line"></i>
+                <span>Daily</span>
+            </div>
+            <div class="mobile-nav-item" data-target="monthly">
+                <i class="fas fa-chart-pie"></i>
+                <span>Report</span>
+            </div>
+            <div class="mobile-nav-item" id="mobileAdminBtn">
+                <i class="fas fa-lock"></i>
+                <span>Admin</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Admin Modals -->
+    <div class="admin-modal" id="settingsModal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeSettings">×</button>
+            <h2 class="admin-title">
+                <i class="fas fa-cog"></i>
+                Timer Settings
+            </h2>
+            
+            <form class="settings-form" id="timerSettingsForm">
+                <div class="form-group">
+                    <label for="focusTime">Focus Time (minutes)</label>
+                    <input type="number" id="focusTime" min="1" max="60" value="25">
+                </div>
+                
+                <div class="form-group">
+                    <label for="breakTime">Break Time (minutes)</label>
+                    <input type="number" id="breakTime" min="1" max="30" value="5">
+                </div>
+                
+                <button type="submit" class="btn">Save Settings</button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="admin-modal" id="historyModal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeHistory">×</button>
+            <h2 class="admin-title">
+                <i class="fas fa-history"></i>
+                Daily History
+            </h2>
+            
+            <div id="historyContainer">
+                <!-- History will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Application State
+        let state = {
+            tasks: {
+                active: [],
+                completed: []
+            },
+            pomodoro: {
+                focusTime: 25,    // in minutes
+                breakTime: 5,     // in minutes
+                isRunning: false,
+                isBreak: false,
+                remainingTime: 25 * 60, // in seconds
+                focusSessions: 0, // total focus sessions today
+                todayFocus: 0,    // total focus time today in seconds
+                weeklyGoal: 0     // percentage
+            },
+            dailyStatus: {
+                tasksCompleted: { completed: 0, total: 0 },
+                focusTime: 0, // in seconds
+                breaksTaken: 0,
+                mood: "good", // can be 'awful', 'bad', 'okay', 'good', 'great'
+                notes: ""
+            },
+            streak: {
+                current: 0,
+                lastActiveDate: null,
+                longestStreak: 0
+            },
+            monthlyReport: {
+                grade: "-",
+                completion: 0, // percentage
+                focusTime: 0,  // in hours
+                sessions: 0,
+                achievements: [],
+                trends: [0, 0, 0, 0, 0, 0, 0], // percentages for each day of the week
+                goals: [
+                    { text: "Achieve 80% task completion rate", completed: false },
+                    { text: "Complete 20 focus sessions", completed: false },
+                    { text: "Maintain 3-day productivity streak", completed: false }
+                ]
+            },
+            dailyHistory: [], // Store daily progress history
+            monthlyHistory: [], // Store monthly reports
+            currentMonth: new Date().getMonth(),
+            currentYear: new Date().getFullYear()
+        };
+        
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load state from localStorage or initialize
+            const savedState = localStorage.getItem('productivityFlowState');
+            if (savedState) {
+                state = JSON.parse(savedState);
+                // Ensure currentMonth and currentYear are set
+                if (state.currentMonth === undefined) {
+                    const now = new Date();
+                    state.currentMonth = now.getMonth();
+                    state.currentYear = now.getFullYear();
+                }
+            } else {
+                // Initialize with default goals
+                state.monthlyReport.goals = [
+                    { text: "Achieve 80% task completion rate", completed: false },
+                    { text: "Complete 20 focus sessions", completed: false },
+                    { text: "Maintain 3-day productivity streak", completed: false }
+                ];
+                // Set current month and year
+                const now = new Date();
+                state.currentMonth = now.getMonth();
+                state.currentYear = now.getFullYear();
+                saveState();
+            }
+            
+            // Set current date
+            const now = new Date();
+            document.getElementById('currentDate').textContent = formatDate(now);
+            
+            // Update streak indicator
+            updateStreak();
+            
+            // Reset daily data if it's a new day
+            checkDayReset();
+            
+            // Initialize UI
+            renderTodoList();
+            renderPomodoroStats();
+            renderDailyStats();
+            renderMonthlyReport();
+            
+            // Navigation
+            const navItems = document.querySelectorAll('.nav-item, .mobile-nav-item');
+            const featureContents = document.querySelectorAll('.feature-content');
+            
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const target = item.getAttribute('data-target');
+                    
+                    // Update navigation
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+                    
+                    // Update content
+                    featureContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById(target).classList.add('active');
+                });
+            });
+            
+            // Theme toggle
+            const themeToggle = document.getElementById('themeToggle');
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                const icon = themeToggle.querySelector('.toggle-switch i');
+                if (document.body.classList.contains('dark-mode')) {
+                    icon.classList.remove('fa-toggle-off');
+                    icon.classList.add('fa-toggle-on');
+                } else {
+                    icon.classList.remove('fa-toggle-on');
+                    icon.classList.add('fa-toggle-off');
+                }
+            });
+            
+            // Admin panel
+            const adminBtn = document.getElementById('adminBtn');
+            const mobileAdminBtn = document.getElementById('mobileAdminBtn');
+            const pinInputs = document.querySelectorAll('.pin-input');
+            const pinSubmit = document.getElementById('pinSubmit');
+            const adminActions = document.getElementById('adminActions');
+            
+            const showAdminPanel = () => {
+                navItems.forEach(nav => nav.classList.remove('active'));
+                featureContents.forEach(content => content.classList.remove('active'));
+                document.getElementById('admin').classList.add('active');
+            };
+            
+            adminBtn.addEventListener('click', showAdminPanel);
+            mobileAdminBtn.addEventListener('click', showAdminPanel);
+            
+            // PIN input handling
+            pinInputs.forEach((input, index) => {
+                input.addEventListener('input', () => {
+                    if (input.value.length === 1 && index < pinInputs.length - 1) {
+                        pinInputs[index + 1].focus();
+                    }
+                });
+                
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && input.value === '' && index > 0) {
+                        pinInputs[index - 1].focus();
+                    }
+                });
+            });
+            
+            pinSubmit.addEventListener('click', () => {
+                let pin = '';
+                pinInputs.forEach(input => pin += input.value);
+                
+                if (pin === '2025') {
+                    adminActions.style.display = 'flex';
+                    pinSubmit.textContent = 'Access Granted';
+                    pinSubmit.style.background = '#4BB543';
+                } else {
+                    pinSubmit.textContent = 'Invalid PIN';
+                    pinSubmit.style.background = '#ff5252';
+                    setTimeout(() => {
+                        pinSubmit.textContent = 'Unlock Admin';
+                        pinSubmit.style.background = '';
+                    }, 2000);
+                }
+            });
+            
+            // Reset data
+            document.getElementById('resetData').addEventListener('click', () => {
+                if (confirm("Are you sure you want to reset all data? This cannot be undone.")) {
+                    localStorage.removeItem('productivityFlowState');
+                    location.reload();
+                }
+            });
+            
+            // Export data
+            document.getElementById('exportData').addEventListener('click', () => {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
+                const downloadAnchorNode = document.createElement('a');
+                downloadAnchorNode.setAttribute("href", dataStr);
+                downloadAnchorNode.setAttribute("download", "productivity-flow-data.json");
+                document.body.appendChild(downloadAnchorNode);
+                downloadAnchorNode.click();
+                downloadAnchorNode.remove();
+                showToast("Data exported successfully!", "success");
+            });
+            
+            // Import data
+            document.getElementById('importData').addEventListener('click', () => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                input.onchange = e => { 
+                    const file = e.target.files[0];
+                    const reader = new FileReader();
+                    reader.readAsText(file, 'UTF-8');
+                    reader.onload = readerEvent => {
+                        try {
+                            const newState = JSON.parse(readerEvent.target.result);
+                            state = newState;
+                            saveState();
+                            location.reload();
+                            showToast("Data imported successfully!", "success");
+                        } catch (error) {
+                            showToast("Invalid data file", "error");
+                        }
+                    };
+                };
+                input.click();
+            });
+            
+            // Timer settings
+            document.getElementById('timerSettings').addEventListener('click', () => {
+                document.getElementById('settingsModal').classList.add('active');
+                document.getElementById('focusTime').value = state.pomodoro.focusTime;
+                document.getElementById('breakTime').value = state.pomodoro.breakTime;
+            });
+            
+            // View history
+            document.getElementById('viewHistory').addEventListener('click', () => {
+                document.getElementById('historyModal').classList.add('active');
+                renderHistory();
+            });
+            
+            // Close modals
+            document.getElementById('closeSettings').addEventListener('click', () => {
+                document.getElementById('settingsModal').classList.remove('active');
+            });
+            
+            document.getElementById('closeHistory').addEventListener('click', () => {
+                document.getElementById('historyModal').classList.remove('active');
+            });
+            
+            // Save timer settings
+            document.getElementById('timerSettingsForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                state.pomodoro.focusTime = parseInt(document.getElementById('focusTime').value);
+                state.pomodoro.breakTime = parseInt(document.getElementById('breakTime').value);
+                state.pomodoro.remainingTime = state.pomodoro.focusTime * 60;
+                updateTimerDisplay();
+                saveState();
+                showToast("Timer settings updated!");
+                document.getElementById('settingsModal').classList.remove('active');
+            });
+            
+            // Month navigation
+            document.getElementById('prevMonthBtn').addEventListener('click', () => {
+                state.currentMonth--;
+                if (state.currentMonth < 0) {
+                    state.currentMonth = 11;
+                    state.currentYear--;
+                }
+                saveState();
+                renderMonthlyReport();
+            });
+            
+            document.getElementById('nextMonthBtn').addEventListener('click', () => {
+                const now = new Date();
+                const currentMonth = now.getMonth();
+                const currentYear = now.getFullYear();
+                
+                if (state.currentMonth === currentMonth && state.currentYear === currentYear) {
+                    showToast("You can't view future months yet", "error");
+                    return;
+                }
+                
+                state.currentMonth++;
+                if (state.currentMonth > 11) {
+                    state.currentMonth = 0;
+                    state.currentYear++;
+                }
+                saveState();
+                renderMonthlyReport();
+            });
+            
+            // Pomodoro Timer
+            const timerTime = document.getElementById('timerTime');
+            const timerStatus = document.getElementById('timerStatus');
+            const startBtn = document.getElementById('startBtn');
+            const pauseBtn = document.getElementById('pauseBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const skipBtn = document.getElementById('skipBtn');
+            const miniTimer = document.getElementById('miniTimer');
+            
+            let timerInterval;
+            
+            function updateTimerDisplay() {
+                const minutes = Math.floor(state.pomodoro.remainingTime / 60);
+                const seconds = state.pomodoro.remainingTime % 60;
+                timerTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                miniTimer.querySelector('span').textContent = timerTime.textContent;
+            }
+            
+            function startTimer() {
+                if (state.pomodoro.isRunning) return;
+                
+                state.pomodoro.isRunning = true;
+                miniTimer.classList.add('running');
+                
+                timerInterval = setInterval(() => {
+                    if (state.pomodoro.remainingTime === 0) {
+                        clearInterval(timerInterval);
+                        state.pomodoro.isRunning = false;
+                        miniTimer.classList.remove('running');
+                        
+                        // Record session completion
+                        if (!state.pomodoro.isBreak) {
+                            // Focus session completed
+                            state.pomodoro.focusSessions++;
+                            state.pomodoro.todayFocus += state.pomodoro.focusTime * 60;
+                            state.dailyStatus.focusTime = state.pomodoro.todayFocus;
+                            state.dailyStatus.breaksTaken++;
+                            
+                            // Update monthly report
+                            state.monthlyReport.sessions++;
+                            state.monthlyReport.focusTime = Math.floor(state.pomodoro.todayFocus / 3600);
+                            
+                            // Save state
+                            saveState();
+                            
+                            // Update UI
+                            renderPomodoroStats();
+                            renderDailyStats();
+                            renderMonthlyReport();
+                            
+                            // Show notification
+                            showToast("Focus session completed! Time for a break.", "success");
+                        } else {
+                            // Break completed
+                            showToast("Break time over! Ready for another focus session?", "success");
+                        }
+                        
+                        // Switch between work and break
+                        if (state.pomodoro.isBreak) {
+                            state.pomodoro.remainingTime = state.pomodoro.focusTime * 60;
+                            timerStatus.textContent = "Focus Time";
+                            miniTimer.style.background = "var(--primary)";
+                        } else {
+                            state.pomodoro.remainingTime = state.pomodoro.breakTime * 60;
+                            timerStatus.textContent = "Break Time";
+                            miniTimer.style.background = "var(--warning)";
+                        }
+                        
+                        state.pomodoro.isBreak = !state.pomodoro.isBreak;
+                        updateTimerDisplay();
+                        return;
+                    }
+                    
+                    state.pomodoro.remainingTime--;
+                    updateTimerDisplay();
+                    
+                    // Update today's focus time
+                    if (!state.pomodoro.isBreak) {
+                        state.dailyStatus.focusTime++;
+                        state.pomodoro.todayFocus++;
+                    }
+                    
+                }, 1000);
+            }
+            
+            function pauseTimer() {
+                clearInterval(timerInterval);
+                state.pomodoro.isRunning = false;
+                miniTimer.classList.remove('running');
+                saveState();
+            }
+            
+            function resetTimer() {
+                clearInterval(timerInterval);
+                state.pomodoro.isRunning = false;
+                state.pomodoro.isBreak = false;
+                miniTimer.classList.remove('running');
+                state.pomodoro.remainingTime = state.pomodoro.focusTime * 60;
+                timerStatus.textContent = "Focus Time";
+                miniTimer.style.background = "var(--primary)";
+                updateTimerDisplay();
+                saveState();
+            }
+            
+            function skipTimer() {
+                clearInterval(timerInterval);
+                state.pomodoro.isRunning = false;
+                miniTimer.classList.remove('running');
+                
+                if (state.pomodoro.isBreak) {
+                    state.pomodoro.remainingTime = state.pomodoro.focusTime * 60;
+                    timerStatus.textContent = "Focus Time";
+                    miniTimer.style.background = "var(--primary)";
+                } else {
+                    state.pomodoro.remainingTime = state.pomodoro.breakTime * 60;
+                    timerStatus.textContent = "Break Time";
+                    miniTimer.style.background = "var(--warning)";
+                }
+                
+                state.pomodoro.isBreak = !state.pomodoro.isBreak;
+                updateTimerDisplay();
+                saveState();
+            }
+            
+            startBtn.addEventListener('click', startTimer);
+            pauseBtn.addEventListener('click', pauseTimer);
+            resetBtn.addEventListener('click', resetTimer);
+            skipBtn.addEventListener('click', skipTimer);
+            
+            // Initialize timer display
+            updateTimerDisplay();
+            
+            // Todo List
+            const todoForm = document.getElementById('todoForm');
+            const todoInput = document.getElementById('todoInput');
+            const todoList = document.getElementById('todoList');
+            const completedList = document.getElementById('completedList');
+            const taskCount = document.getElementById('taskCount');
+            const completedCount = document.getElementById('completedCount');
+            
+            todoForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const taskText = todoInput.value.trim();
+                
+                if (taskText) {
+                    addTask(taskText);
+                    todoInput.value = '';
+                    showToast("Task added successfully!");
+                }
+            });
+            
+            // Mood selection
+            const moodOptions = document.querySelectorAll('.mood-option');
+            moodOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    moodOptions.forEach(m => m.classList.remove('selected'));
+                    option.classList.add('selected');
+                    state.dailyStatus.mood = option.getAttribute('data-mood');
+                    saveState();
+                });
+            });
+            
+            // Save daily notes
+            document.getElementById('saveNotes').addEventListener('click', () => {
+                state.dailyStatus.notes = document.getElementById('dailyNotes').value;
+                saveState();
+                showToast("Notes saved successfully!");
+            });
+            
+            // Initialize notes
+            document.getElementById('dailyNotes').value = state.dailyStatus.notes;
+            
+            // Set selected mood
+            document.querySelector(`.mood-option[data-mood="${state.dailyStatus.mood}"]`).classList.add('selected');
+            
+            // Export report
+            document.getElementById('exportReport').addEventListener('click', () => {
+                exportMonthlyReport();
+            });
+        });
+        
+        // Application Functions
+        function saveState() {
+            localStorage.setItem('productivityFlowState', JSON.stringify(state));
+        }
+        
+        function showToast(message, type = "success") {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast';
+            toast.classList.add(type);
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        function addTask(text) {
+            const newTask = {
+                id: Date.now(),
+                text,
+                completed: false,
+                createdAt: new Date().toISOString()
+            };
+            
+            state.tasks.active.push(newTask);
+            state.dailyStatus.tasksCompleted.total++;
+            saveState();
+            renderTodoList();
+            updateTaskStats();
+        }
+        
+        function completeTask(taskId) {
+            const taskIndex = state.tasks.active.findIndex(t => t.id === taskId);
+            if (taskIndex !== -1) {
+                const task = state.tasks.active[taskIndex];
+                task.completed = true;
+                task.completedAt = new Date().toISOString();
+                
+                // Move to completed
+                state.tasks.completed.push(task);
+                state.tasks.active.splice(taskIndex, 1);
+                
+                // Update stats
+                state.dailyStatus.tasksCompleted.completed++;
+                
+                // Update streak
+                updateStreak();
+                
+                saveState();
+                
+                renderTodoList();
+                updateTaskStats();
+                renderDailyStats();
+                renderMonthlyReport();
+            }
+        }
+        
+        function deleteTask(taskId, isCompleted = false) {
+            if (isCompleted) {
+                state.tasks.completed = state.tasks.completed.filter(t => t.id !== taskId);
+            } else {
+                state.tasks.active = state.tasks.active.filter(t => t.id !== taskId);
+                state.dailyStatus.tasksCompleted.total--;
+            }
+            saveState();
+            renderTodoList();
+            updateTaskStats();
+        }
+        
+        function editTask(taskId, newText) {
+            const task = [...state.tasks.active, ...state.tasks.completed].find(t => t.id === taskId);
+            if (task) {
+                task.text = newText;
+                saveState();
+                renderTodoList();
+            }
+        }
+        
+        function renderTodoList() {
+            // Active tasks
+            todoList.innerHTML = '';
+            state.tasks.active.forEach(task => {
+                const li = document.createElement('li');
+                li.className = 'todo-item';
+                li.innerHTML = `
+                    <div class="todo-check"></div>
+                    <div class="todo-text">${task.text}</div>
+                    <div class="todo-actions">
+                        <i class="fas fa-edit"></i>
+                        <i class="fas fa-trash"></i>
+                    </div>
+                `;
+                
+                const check = li.querySelector('.todo-check');
+                const text = li.querySelector('.todo-text');
+                const editBtn = li.querySelector('.fa-edit');
+                const deleteBtn = li.querySelector('.fa-trash');
+                
+                check.addEventListener('click', () => {
+                    completeTask(task.id);
+                });
+                
+                deleteBtn.addEventListener('click', () => {
+                    deleteTask(task.id);
+                });
+                
+                editBtn.addEventListener('click', () => {
+                    const newText = prompt('Edit task:', text.textContent);
+                    if (newText !== null && newText.trim() !== '') {
+                        editTask(task.id, newText.trim());
+                    }
+                });
+                
+                todoList.appendChild(li);
+            });
+            
+            // Completed tasks
+            completedList.innerHTML = '';
+            state.tasks.completed.forEach(task => {
+                const li = document.createElement('li');
+                li.className = 'todo-item';
+                li.innerHTML = `
+                    <div class="todo-check completed">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="todo-text completed">${task.text}</div>
+                    <div class="todo-actions">
+                        <i class="fas fa-trash"></i>
+                    </div>
+                `;
+                
+                const deleteBtn = li.querySelector('.fa-trash');
+                deleteBtn.addEventListener('click', () => {
+                    deleteTask(task.id, true);
+                });
+                
+                completedList.appendChild(li);
+            });
+            
+            updateTaskStats();
+        }
+        
+        function updateTaskStats() {
+            taskCount.textContent = `${state.tasks.active.length} task${state.tasks.active.length !== 1 ? 's' : ''}`;
+            completedCount.textContent = `${state.tasks.completed.length} task${state.tasks.completed.length !== 1 ? 's' : ''}`;
+            
+            // Update daily status
+            state.dailyStatus.tasksCompleted.completed = state.tasks.completed.length;
+            state.dailyStatus.tasksCompleted.total = state.tasks.active.length + state.tasks.completed.length;
+            
+            // Update monthly report
+            if (state.dailyStatus.tasksCompleted.total > 0) {
+                state.monthlyReport.completion = Math.round((state.dailyStatus.tasksCompleted.completed / state.dailyStatus.tasksCompleted.total) * 100);
+            } else {
+                state.monthlyReport.completion = 0;
+            }
+            
+            // Update report grade
+            if (state.monthlyReport.completion >= 90) state.monthlyReport.grade = "A+";
+            else if (state.monthlyReport.completion >= 80) state.monthlyReport.grade = "A";
+            else if (state.monthlyReport.completion >= 70) state.monthlyReport.grade = "B+";
+            else if (state.monthlyReport.completion >= 60) state.monthlyReport.grade = "B";
+            else if (state.monthlyReport.completion >= 50) state.monthlyReport.grade = "C";
+            else state.monthlyReport.grade = "D";
+            
+            // Check achievements
+            const achievements = [];
+            if (state.streak.current >= 3) achievements.push("Consistency Master");
+            if (state.streak.current >= 5) achievements.push("5-Day Streak");
+            if (state.pomodoro.focusSessions >= 20) achievements.push("Focus Champion");
+            if (state.monthlyReport.completion >= 80) achievements.push("Task Master");
+            
+            state.monthlyReport.achievements = achievements;
+            
+            saveState();
+        }
+        
+        function renderPomodoroStats() {
+            document.getElementById('sessionCount').textContent = state.pomodoro.focusSessions;
+            document.getElementById('todayFocus').textContent = formatTime(state.dailyStatus.focusTime);
+            document.getElementById('weeklyGoal').textContent = `${state.pomodoro.weeklyGoal}%`;
+        }
+        
+        function renderDailyStats() {
+            document.getElementById('tasksCompleted').textContent = 
+                `${state.dailyStatus.tasksCompleted.completed}/${state.dailyStatus.tasksCompleted.total}`;
+                
+            document.getElementById('dailyFocus').textContent = formatTime(state.dailyStatus.focusTime);
+            document.getElementById('breaksTaken').textContent = state.dailyStatus.breaksTaken;
+        }
+        
+        function renderMonthlyReport() {
+            const monthNames = ["January", "February", "March", "April", "May", "June", 
+                               "July", "August", "September", "October", "November", "December"];
+            
+            const monthName = monthNames[state.currentMonth];
+            document.getElementById('reportMonth').textContent = `${monthName} ${state.currentYear} Report Card`;
+            
+            // Calculate date range for the month
+            const startDate = new Date(state.currentYear, state.currentMonth, 1);
+            const endDate = new Date(state.currentYear, state.currentMonth + 1, 0);
+            document.getElementById('reportDateRange').textContent = 
+                `${startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - 
+                 ${endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+            
+            // Find or create monthly report
+            const reportKey = `${state.currentMonth}-${state.currentYear}`;
+            let monthlyReport = state.monthlyHistory.find(r => r.key === reportKey);
+            
+            if (!monthlyReport) {
+                // Create a new monthly report
+                monthlyReport = {
+                    key: reportKey,
+                    month: state.currentMonth,
+                    year: state.currentYear,
+                    grade: "-",
+                    completion: 0,
+                    focusTime: 0,
+                    sessions: 0,
+                    achievements: [],
+                    trends: [0, 0, 0, 0, 0, 0, 0],
+                    goals: [
+                        { text: "Achieve 80% task completion rate", completed: false },
+                        { text: "Complete 20 focus sessions", completed: false },
+                        { text: "Maintain 3-day productivity streak", completed: false }
+                    ]
+                };
+                state.monthlyHistory.push(monthlyReport);
+                saveState();
+            }
+            
+            // Update UI with the monthly report
+            document.getElementById('reportGrade').textContent = state.monthlyReport.grade;
+            document.getElementById('completionRate').textContent = `${state.monthlyReport.completion}%`;
+            document.getElementById('monthlyFocus').textContent = `${Math.floor(state.monthlyReport.focusTime)}h`;
+            document.getElementById('monthlySessions').textContent = state.monthlyReport.sessions;
+            document.getElementById('streakRecord').textContent = state.streak.longestStreak;
+            
+            // Achievements
+            const achievementsEl = document.getElementById('achievements');
+            achievementsEl.innerHTML = '';
+            state.monthlyReport.achievements.forEach(achievement => {
+                const badge = document.createElement('div');
+                badge.className = 'badge';
+                badge.innerHTML = `<i class="fas fa-medal"></i><span>${achievement}</span>`;
+                achievementsEl.appendChild(badge);
+            });
+            
+            // Productivity metrics
+            const metricsEl = document.getElementById('productivityMetrics');
+            metricsEl.innerHTML = `
+                <div class="productivity-bar">
+                    <div class="productivity-label">Task Completion</div>
+                    <div class="productivity-progress">
+                        <div class="productivity-progress-fill" style="width: ${state.monthlyReport.completion}%"></div>
+                    </div>
+                    <div class="productivity-value">${state.monthlyReport.completion}%</div>
+                </div>
+                <div class="productivity-bar">
+                    <div class="productivity-label">Focus Sessions</div>
+                    <div class="productivity-progress">
+                        <div class="productivity-progress-fill" style="width: ${Math.min(100, state.monthlyReport.sessions / 20 * 100)}%"></div>
+                    </div>
+                    <div class="productivity-value">${state.monthlyReport.sessions}/20</div>
+                </div>
+                <div class="productivity-bar">
+                    <div class="productivity-label">Streak Record</div>
+                    <div class="productivity-progress">
+                        <div class="productivity-progress-fill" style="width: ${Math.min(100, state.streak.longestStreak / 7 * 100)}%"></div>
+                    </div>
+                    <div class="productivity-value">${state.streak.longestStreak} days</div>
+                </div>
+            `;
+            
+            // Monthly goals
+            const goalsEl = document.getElementById('monthlyGoals');
+            goalsEl.innerHTML = '';
+            state.monthlyReport.goals.forEach(goal => {
+                const li = document.createElement('li');
+                li.className = 'todo-item';
+                li.innerHTML = `
+                    <div class="todo-check ${goal.completed ? 'completed' : ''}">
+                        ${goal.completed ? '<i class="fas fa-check"></i>' : ''}
+                    </div>
+                    <div class="todo-text ${goal.completed ? 'completed' : ''}">${goal.text}</div>
+                `;
+                
+                const check = li.querySelector('.todo-check');
+                check.addEventListener('click', () => {
+                    goal.completed = !goal.completed;
+                    saveState();
+                    renderMonthlyReport();
+                });
+                
+                goalsEl.appendChild(li);
+            });
+        }
+        
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            
+            if (hours > 0) {
+                return `${hours}h ${minutes}m`;
+            }
+            return `${minutes}m`;
+        }
+        
+        function updateStreak() {
+            const today = new Date();
+            const todayStr = today.toDateString();
+            
+            // If we have no record, start streak today
+            if (!state.streak.lastActiveDate) {
+                state.streak.current = 1;
+                state.streak.lastActiveDate = todayStr;
+                saveState();
+                updateStreakUI();
+                return;
+            }
+            
+            const lastActive = new Date(state.streak.lastActiveDate);
+            const timeDiff = today - lastActive;
+            const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            
+            if (daysDiff === 0) {
+                // Already recorded activity today
+                updateStreakUI();
+                return;
+            }
+            
+            if (daysDiff === 1) {
+                // Consecutive day - increment streak
+                state.streak.current++;
+            } else {
+                // Broken streak - reset to 1
+                state.streak.current = 1;
+            }
+            
+            // Update longest streak record
+            if (state.streak.current > state.streak.longestStreak) {
+                state.streak.longestStreak = state.streak.current;
+            }
+            
+            state.streak.lastActiveDate = todayStr;
+            saveState();
+            updateStreakUI();
+        }
+        
+        function updateStreakUI() {
+            document.getElementById('streakCount').textContent = state.streak.current;
+            
+            // Add animation for streaks over 3 days
+            const fireIcon = document.querySelector('.streak-fire');
+            if (state.streak.current >= 3) {
+                fireIcon.style.display = 'inline-block';
+            } else {
+                fireIcon.style.display = 'none';
+            }
+        }
+        
+        function checkDayReset() {
+            const today = new Date();
+            const todayStr = today.toDateString();
+            
+            // Check if we've already reset today
+            if (state.dailyStatus.lastResetDate === todayStr) {
+                return;
+            }
+            
+            // Save yesterday's data to history
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayStr = yesterday.toDateString();
+            
+            // Only save if we had activity yesterday
+            if (state.dailyStatus.tasksCompleted.total > 0 || state.dailyStatus.focusTime > 0) {
+                state.dailyHistory.push({
+                    date: yesterdayStr,
+                    tasksCompleted: { ...state.dailyStatus.tasksCompleted },
+                    focusTime: state.dailyStatus.focusTime,
+                    breaksTaken: state.dailyStatus.breaksTaken,
+                    mood: state.dailyStatus.mood
+                });
+            }
+            
+            // Reset daily data
+            state.dailyStatus = {
+                tasksCompleted: { completed: 0, total: state.tasks.active.length },
+                focusTime: 0,
+                breaksTaken: 0,
+                mood: "good",
+                notes: "",
+                lastResetDate: todayStr
+            };
+            
+            // Reset pomodoro daily stats
+            state.pomodoro.focusSessions = 0;
+            state.pomodoro.todayFocus = 0;
+            
+            // Reset daily notes
+            document.getElementById('dailyNotes').value = "";
+            
+            // Reset selected mood to default
+            document.querySelectorAll('.mood-option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelector('.mood-option[data-mood="good"]').classList.add('selected');
+            
+            saveState();
+            
+            // Show notification only if it's a new day (not first load)
+            if (state.dailyStatus.lastResetDate) {
+                showToast("A new day has started! Let's make it productive!", "success");
+            }
+        }
+        
+        function formatDate(date) {
+            return date.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+        }
+        
+        function exportMonthlyReport() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Add title
+            doc.setFontSize(22);
+            doc.text('Monthly Productivity Report', 105, 20, { align: 'center' });
+            
+            // Add date
+            doc.setFontSize(16);
+            doc.text(document.getElementById('reportMonth').textContent, 105, 30, { align: 'center' });
+            
+            // Add grade
+            doc.setFontSize(60);
+            doc.setTextColor(67, 97, 238); // primary color
+            doc.text(document.getElementById('reportGrade').textContent, 105, 60, { align: 'center' });
+            
+            // Reset text color
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(12);
+            
+            // Add stats
+            doc.text(`Completion Rate: ${document.getElementById('completionRate').textContent}`, 20, 80);
+            doc.text(`Focus Time: ${document.getElementById('monthlyFocus').textContent}`, 20, 90);
+            doc.text(`Sessions: ${document.getElementById('monthlySessions').textContent}`, 20, 100);
+            doc.text(`Longest Streak: ${document.getElementById('streakRecord').textContent} days`, 20, 110);
+            
+            // Add achievements
+            doc.setFontSize(14);
+            doc.text('Achievements:', 20, 130);
+            
+            let y = 140;
+            const achievements = document.querySelectorAll('#achievements .badge span');
+            achievements.forEach(ach => {
+                doc.text('- ' + ach.textContent, 25, y);
+                y += 10;
+            });
+            
+            // Save the PDF
+            doc.save(`productivity-report-${state.currentYear}-${state.currentMonth+1}.pdf`);
+        }
+        
+        function renderHistory() {
+            const container = document.getElementById('historyContainer');
+            container.innerHTML = '';
+            
+            if (state.dailyHistory.length === 0) {
+                container.innerHTML = '<p style="text-align: center;">No history data available yet</p>';
+                return;
+            }
+            
+            // Show last 7 days of history
+            const recentHistory = [...state.dailyHistory].reverse().slice(0, 7);
+            
+            recentHistory.forEach(day => {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'history-day';
+                
+                const completion = day.tasksCompleted.total > 0 ? 
+                    Math.round((day.tasksCompleted.completed / day.tasksCompleted.total) * 100) : 0;
+                
+                dayEl.innerHTML = `
+                    <h4>${day.date}</h4>
+                    <p>Completed: ${day.tasksCompleted.completed}/${day.tasksCompleted.total} (${completion}%)</p>
+                    <p>Focus Time: ${formatTime(day.focusTime)}</p>
+                    <p>Breaks: ${day.breaksTaken}</p>
+                    <p>Mood: ${day.mood}</p>
+                `;
+                
+                container.appendChild(dayEl);
+            });
+        }
+    </script>
+
+</body></html>
